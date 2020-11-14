@@ -45,7 +45,7 @@
 
     // Download the data
     myConnector.getData = function(table, doneCallback) {
-        $.getJSON("http://idph.illinois.gov/DPHPublicInformation/api/COVID/GetCountyHistorical?application=json&countyName=Sangamon", function(resp) {
+        $.getJSON("https://idph.illinois.gov/DPHPublicInformation/api/COVID/GetCountyHistorical?application=json&countyName=Sangamon", function(resp) {
             var vals = resp.values, 
                 tableData = [];
 
