@@ -99,7 +99,6 @@ $(document).ready(function() {
 	};
 
 	tableau.connectionName = "County Level COVID Data"; // This will be the data source name in Tableau
-	tableau.submit(); // This sends the connector object to Tableau
 	tableau.registerConnector(myConnector);
 	
 	$("#submitButton").click(function() {
