@@ -68,39 +68,41 @@ $(document).ready(function() {
 		schemaCallback([tableSchema]);
 	};
 
+
+	// Download the data
+	myConnector.getData = function(table, doneCallback) {
+		var apiUri = "https://idph.illinois.gov/DPHPublicInformation/api/COVID/GetCountyHistorical?application=json&";
+		var paramsObj = JSON.parse(tableau.connectionData),
+			paramsString = "countyName=" + paramsObj.countyName,
+			apiCall = apiUri + paramsString;
+
+		$.getJSON(apiCall, function(resp) {
+			var vals = resp.values,
+				tableData = [];
+
+			// Iterate over the JSON object
+			for (var i = 0, len = vals.length; i < len; i++) {
+				tableData.push({
+					"CountyName": vals[i].CountyName,
+					"tested": vals[i].tested,
+					"confirmed_cases": vals[i].confirmed_cases,
+					"deaths": vals[i].deaths,
+					"reportDate": vals[i].reportDate,
+					"latitude": vals[i].latitude,
+					"longitude": vals[i].longitude
+				});
+			}
+
+			table.appendRows(tableData);
+			doneCallback();
+		});
+	};
+
+	tableau.connectionName = "County Level COVID Data"; // This will be the data source name in Tableau
+	// tableau.submit(); // This sends the connector object to Tableau
 	tableau.registerConnector(myConnector);
-
+	
 	$("#submitButton").click(function() {
-		// Download the data
-		myConnector.getData = function(table, doneCallback) {
-			var apiUri = "https://idph.illinois.gov/DPHPublicInformation/api/COVID/GetCountyHistorical?application=json&";
-			var paramsObj = JSON.parse(tableau.connectionData),
-				paramsString = "countyName=" + paramsObj.countyName,
-				apiCall = apiUri + paramsString;
-
-			$.getJSON(apiCall, function(resp) {
-				var vals = resp.values,
-					tableData = [];
-
-				// Iterate over the JSON object
-				for (var i = 0, len = vals.length; i < len; i++) {
-					tableData.push({
-						"CountyName": vals[i].CountyName,
-						"tested": vals[i].tested,
-						"confirmed_cases": vals[i].confirmed_cases,
-						"deaths": vals[i].deaths,
-						"reportDate": vals[i].reportDate,
-						"latitude": vals[i].latitude,
-						"longitude": vals[i].longitude
-					});
-				}
-
-				table.appendRows(tableData);
-				doneCallback();
-			});
-		};
-
-
 		// Create event listeners for when the user submits the form
 		// $(document).ready(function() {
 		// $("#submitButton").click(function() {
@@ -109,11 +111,10 @@ $(document).ready(function() {
 		};
 
 		tableau.connectionData = JSON.stringify(cntyName); // Use this variable to pass data to your getSchema and getData functions
-		tableau.connectionName = "County Level COVID Data"; // This will be the data source name in Tableau
 		tableau.submit(); // This sends the connector object to Tableau
 
 		// });
 
 		// });
 	});
-})();
+});
