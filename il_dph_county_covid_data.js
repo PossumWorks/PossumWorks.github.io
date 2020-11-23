@@ -19,7 +19,7 @@ $(document).ready(function() {
 	}
 
 	$("#countySel").on('change', function() {
-		alert($("#countySel :selected").val());
+		//alert($("#countySel :selected").val());
 		updateFormEnabled();
 
 	});
