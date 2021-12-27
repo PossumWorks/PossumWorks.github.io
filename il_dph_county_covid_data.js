@@ -84,8 +84,8 @@ $(document).ready(function() {
 			for (var i = 0, len = vals.length; i < len; i++) {
 				tableData.push({
 					"CountyName": vals[i].CountyName,
-					"tested": vals[i].tested,
-					"confirmed_cases": vals[i].confirmed_cases,
+					"TotalTested": vals[i].TotalTested,
+					"CumulativeCases": vals[i].CumulativeCases,
 					"deaths": vals[i].deaths,
 					"reportDate": vals[i].reportDate,
 					"latitude": vals[i].latitude,
