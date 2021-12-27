@@ -29,28 +29,27 @@ $(document).ready(function() {
 
 	// Define the schema
 	myConnector.getSchema = function(schemaCallback) {
-		var cols = [{
-			id: "CountyName",
-			alias: "County Name",
-			dataType: tableau.dataTypeEnum.string
-		}, {
-			id: "TotalTested",
-			alias: "Number Tested",
-			dataType: tableau.dataTypeEnum.int
-		}, {
-			id: "CumulativeCases",
-			alias: "Total Cases",
-			dataType: tableau.dataTypeEnum.int
-		}, {
-			id: "Deaths",
-			alias: "Deaths",
-			dataType: tableau.dataTypeEnum.int
-		}, {
-			id: "ReportDate",
-			alias: "Date",
-			dataType: tableau.dataTypeEnum.datetime
-		}];
-
+			var cols = [{
+				id: "CountyName",
+				alias: "County Name",
+				dataType: tableau.dataTypeEnum.string
+			}, {
+				id: "tested",
+				alias: "Number Tested",
+				dataType: tableau.dataTypeEnum.int
+			}, {
+				id: "confirmed_cases",
+				alias: "Total Cases",
+				dataType: tableau.dataTypeEnum.int
+			}, {
+				id: "deaths",
+				alias: "Deaths",
+				dataType: tableau.dataTypeEnum.int
+			}, {
+				id: "reportDate",
+				alias: "Date",
+				dataType: tableau.dataTypeEnum.datetime
+			}];
 		var tableSchema = {
 			id: "countyTemproalCovidFeed",
 			alias: "Temporal COVID data by County - IL DPH Public Data",
@@ -76,10 +75,10 @@ $(document).ready(function() {
 			for (var i = 0, len = vals.length; i < len; i++) {
 				tableData.push({
 					"CountyName": vals[i].CountyName,
-					"TotalTested": vals[i].TotalTested,
-					"CumulativeCases": vals[i].CumulativeCases,
-					"Deaths": vals[i].Deaths,
-					"ReportDate": vals[i].ReportDate
+					"tested": vals[i].TotalTested,
+					"confirmed_cases": vals[i].CumulativeCases,
+					"deaths": vals[i].Deaths,
+					"reportDate": vals[i].ReportDate
 
 				});
 			}
