@@ -42,12 +42,12 @@ $(document).ready(function() {
 			alias: "CumulativeCases",
 			dataType: tableau.dataTypeEnum.int
 		}, {
-			id: "deaths",
+			id: "Deaths",
 			alias: "Deaths",
 			dataType: tableau.dataTypeEnum.int
 		}, {
 			id: "reportDate",
-			alias: "Date",
+			alias: "reportDate",
 			dataType: tableau.dataTypeEnum.datetime
 		}];
 
@@ -78,7 +78,7 @@ $(document).ready(function() {
 					"CountyName": vals[i].CountyName,
 					"TotalTested": vals[i].TotalTested,
 					"CumulativeCases": vals[i].CumulativeCases,
-					"deaths": vals[i].deaths,
+					"Deaths": vals[i].Deaths,
 					"reportDate": vals[i].reportDate
 
 				});
