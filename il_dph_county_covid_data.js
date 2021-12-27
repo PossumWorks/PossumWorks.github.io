@@ -35,10 +35,10 @@ $(document).ready(function() {
 			dataType: tableau.dataTypeEnum.string
 		}, {
 			id: "tested",
-			alias: "Number Tested",
+			alias: "TotalTested",
 			dataType: tableau.dataTypeEnum.int
 		}, {
-			id: "confirmed_cases",
+			id: "CumulativeCases",
 			alias: "Total Cases",
 			dataType: tableau.dataTypeEnum.int
 		}, {
