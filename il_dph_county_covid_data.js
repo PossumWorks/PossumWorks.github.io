@@ -46,8 +46,8 @@ $(document).ready(function() {
 			alias: "Deaths",
 			dataType: tableau.dataTypeEnum.int
 		}, {
-			id: "reportDate",
-			alias: "reportDate",
+			id: "ReportDate",
+			alias: "ReportDate",
 			dataType: tableau.dataTypeEnum.datetime
 		}];
 
@@ -79,7 +79,7 @@ $(document).ready(function() {
 					"TotalTested": vals[i].TotalTested,
 					"CumulativeCases": vals[i].CumulativeCases,
 					"Deaths": vals[i].Deaths,
-					"reportDate": vals[i].reportDate
+					"ReportDate": vals[i].ReportDate
 
 				});
 			}
