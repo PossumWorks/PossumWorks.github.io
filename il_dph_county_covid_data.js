@@ -34,12 +34,12 @@ $(document).ready(function() {
 			alias: "County Name",
 			dataType: tableau.dataTypeEnum.string
 		}, {
-			id: "tested",
+			id: "TotalTested",
 			alias: "TotalTested",
 			dataType: tableau.dataTypeEnum.int
 		}, {
 			id: "CumulativeCases",
-			alias: "Total Cases",
+			alias: "CumulativeCases",
 			dataType: tableau.dataTypeEnum.int
 		}, {
 			id: "deaths",
@@ -49,14 +49,6 @@ $(document).ready(function() {
 			id: "reportDate",
 			alias: "Date",
 			dataType: tableau.dataTypeEnum.datetime
-		}, {
-			id: "latitude",
-			alias: "Lat",
-			dataType: tableau.dataTypeEnum.float
-		}, {
-			id: "longitude",
-			alias: "Lon",
-			dataType: tableau.dataTypeEnum.float
 		}];
 
 		var tableSchema = {
@@ -87,9 +79,8 @@ $(document).ready(function() {
 					"TotalTested": vals[i].TotalTested,
 					"CumulativeCases": vals[i].CumulativeCases,
 					"deaths": vals[i].deaths,
-					"reportDate": vals[i].reportDate,
-					"latitude": vals[i].latitude,
-					"longitude": vals[i].longitude
+					"reportDate": vals[i].reportDate
+
 				});
 			}
 
