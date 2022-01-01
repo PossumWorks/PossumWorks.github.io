@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Convert JSON Data to HTML Table</title>
+    <style>
+        th, td, p, input, h3 {
+            font:15px 'Segoe UI';
+        }
+        table, th, td {
+            border: solid 1px #ddd;
+            border-collapse: collapse;
+            padding: 2px 3px;
+            text-align: center;
+        }
+        th {
+            font-weight:bold;
+        }
+    </style>
+</head>
+<body>
+	<h1>
+    	Data capture on page load example:
+    </h1>
+	<h4 style="width:60%;" >When this page loads, a script will collect the latest county level 
+	COVID data from the Illinois Department of Public Health Data API. 
+    </h4>
+	<h5>
+	The data displayed is filtered to include the last 7 days/records for Montgomery county, IL
+	</h5>
+	
+    
+	<table class='table'>
+		<thead id='thead' ><tr></tr></thead>
+		<tbody id='tbody'></tbody>
+	</table>
+	
+    
+
+</body>
+
+<script>
+
+	var ilCovidApi = 'https://idph.illinois.gov/DPHPublicInformation/api/COVID/GetCountyHistorical?application=json&countyName=Montgomery';
+
+	var fieldMap = {'ReportDate':'Date', 
+					'CasesChange':'Positives',   
+					'TotalTestedChange':'Tested', 
+					'DeathsChange':'Deaths'}; 
+	
+	
+	//'ReportDate	CountyName	CumulativeCases	CasesChange	TotalTested	//TotalTestedChange	Deaths	DeathsChange
+	
+	// function to rename keys/headers
+	function renameKey ( obj, oldKey, newKey ) {
+		obj[newKey] = obj[oldKey];
+		delete obj[oldKey];
+	}
+
+	// function to reduce unwanted key value pairs
+	async function reduceKeys(jsonObj, retainKeys) {
+		const rk = new Set(retainKeys);
+		for (const obj of jsonObj) {
+			for (const prop of Object.keys(obj)) {
+				if (rk.has(prop) === false) {
+					delete obj[prop];
+				}
+			}
+		}
+		return jsonObj;
+	};
+	
+	async function loadIntoTable(url, tableName, recLimit) {
+		const table = document.querySelector(tableName)
+		const tableHead = table.querySelector("thead");
+		const tableBody = table.querySelector("tbody");
+		const response = await fetch(url);
+		const rtnData = await response.json();
+		console.log('API request complete')
+		const data = (rtnData.values).slice((-1 *recLimit),);
+		tblData = await reduceKeys(data, Object.keys(fieldMap));
+		
+		console.log('Clearing the table')
+		// clear the table
+		tableHead.innerHtml = "<tr></tr>";
+		tableBody.innerHtml = "";		
+		
+		console.log('processing data for output table')
+		var headers = [];
+		var rows = [];
+		
+		// convert datetime to dates
+		async function formatDateKeys(jsonObj, dateKey) {
+			jsonObj.forEach(function (obj) {
+				if (Object.keys(obj).includes(dateKey)) {
+					obj[dateKey] = obj[dateKey].substring(0, 10);
+				}
+			return jsonObj
+			})
+		};
+		
+		// format the dates
+		formatDateKeys(tblData, 'ReportDate');
+
+		// collect header and rows and arrays	
+		await tblData.forEach(function (obj) {
+			// create a unique list/array of headers
+			if (headers.includes(Object.keys(obj)) === false) {
+				Object.keys(obj).forEach (function (key) {
+					if (headers.includes(fieldMap[key]) === false){
+						if (Object.keys(fieldMap).includes(key)){
+							headers.push(fieldMap[key]);
+							}
+					}
+				});
+			};
+
+			// convert the values to arrays
+			rows.push(Object.values(obj));				
+		});
+		
+		console.log('Populating table headers')		
+		// populate the headers
+		for (const headerText of headers) {
+			const headerElement = document.createElement("th");
+			headerElement.textContent = headerText;
+			tableHead.querySelector("tr").appendChild(headerElement);
+		}
+		console.log('Populating table rows')	
+		// populate the rows
+		for (const row of rows) {
+			const rowElement = document.createElement("tr");
+			
+			for (const cellText of row) {
+				const cellElement = document.createElement("td");
+				
+				cellElement.textContent = cellText;
+				rowElement.appendChild(cellElement);
+			}
+			tableBody.appendChild(rowElement);
+		}
+			
+		console.log('Table complete')	
+	}	
+		// credits: DCode https://www.youtube.com/watch?v=qBg8IB3u28s
+		
+
+	// On page load, collect daily COVID data and build data table
+	if( document.readyState !== 'loading' ) {
+		console.log('Page ready,collecting data from: ' + ilCovidApi );
+		loadIntoTable(ilCovidApi, "table", 7);
+	} else {
+		document.addEventListener('DOMContentLoaded', function () {
+			console.log('Waiting on page to load, then collecting data from: ' + ilCovidApi);
+			loadIntoTable(ilCovidApi, "table", 7);
+		});
+	}
+	
+
+</script>
+
+</html>
