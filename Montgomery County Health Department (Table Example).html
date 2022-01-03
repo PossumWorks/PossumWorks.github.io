@@ -196,16 +196,17 @@ body,td,th {
         th, td, p, input, h3 {
             font:15px 'Segoe UI';
         }
-        .covidStatsTable, th, td {
+        .covidStatsTable, th, tr, td {
 			width: 100%;
 			table-layout: fixed;
-            border: solid 1px #7069f5;
+			border: solid 0.01em rgba(140, 180, 250, .3);
             border-collapse: collapse;
             padding: 0.3em 1em;
             text-align: center;
 			margin-left: auto;
   			margin-right: auto;
         }
+		
         th {
             font-weight:bold;
 			background-color: #ebf0fa;
@@ -224,21 +225,32 @@ body,td,th {
 		  background-color: #ebf0fa;
 		}
 		
+	
+		
+		/* Specialized style by table section id 3*/
+		[id^="sec3-tr-"] {
+		  font-style: italic;
+		  font-weight: bold;
+		  text-align: center;
+		  font:0.9em 'Segoe UI';
+		  border: border: none;
+		  border-collapse: collapse;
+		}			
+		
 		/* Specialized style by table section id 3 & row 1*/
 		[id^="sec3-tr-1"] {
 		  font-style: italic;
 		  font-weight: bold;
 		  text-align: center;
-		}		
+		  font:1em 'Segoe UI';
+		}	
+
+		/* Specialized style by table section id 3*/
+		[id^="sec3-tr-"] {
+		  color: #ff4800;
+		  background-color: #ebf0fa;
+		}	
 		
-		/* Specialized style by table section id 3 & row 2*/
-		[id^="sec3-tr-2"] {
-		  font-style: italic;
-		  font-weight: bold;
-		  text-align: center;
-		  font:10px 'Segoe UI';
-		}			
-	
     </style>
 <!-- *change end* -->   
 <!-- ***************************************************************************************************************** -->
@@ -565,6 +577,8 @@ var MenuBar1 = new Spry.Widget.MenuBar("MenuBar1", {imgRight:"SpryAssets/SpryMen
 		const tableHead = table.querySelector("thead");
 		const tableBody = table.querySelector("tbody");
 		
+		const pullDateTimeSmt = `Data Request Sent On:  
+		${Date().toLocaleString('en-US')}`
 		const response = await fetch(url);
 		const rtnData = await response.json();
 		console.log('API request complete');
@@ -630,7 +644,8 @@ var MenuBar1 = new Spry.Widget.MenuBar("MenuBar1", {imgRight:"SpryAssets/SpryMen
 						[`Total Positive Cases:  ${(totalsData['CumulativeCases']).toLocaleString("en-US")}`],
 						[`Total Tests Completed:  ${(totalsData['TotalTested']).toLocaleString("en-US")}`],
 						[`Total Fatalities:  ${(totalsData['Deaths']).toLocaleString("en-US")}`],
-						[`Reporting Current As Of:  ${totalsData['ReportDate']}`]
+						[`Latest Report Date:  ${totalsData['ReportDate']}`]
+						
 					], 
 					colspan=4,
 					secId=2 
@@ -638,7 +653,11 @@ var MenuBar1 = new Spry.Widget.MenuBar("MenuBar1", {imgRight:"SpryAssets/SpryMen
 					
 		// append data source citation info
 		appendRows(	tableBody, 
-					[[''],['']], 
+					[
+						[''],
+						[''],
+						[pullDateTimeSmt]
+					], 
 					colspan=4,
 					secId=3 
 					);		
@@ -672,7 +691,7 @@ var MenuBar1 = new Spry.Widget.MenuBar("MenuBar1", {imgRight:"SpryAssets/SpryMen
 			loadIntoTable(ilCovidApi, "covidStatsTable", 7);
 		});
 	}
-	
+
 <!-- ***************************************************************************************************************** -->	
 <!-- *change end* -->   
 
