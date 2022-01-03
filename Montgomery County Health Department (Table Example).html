@@ -213,12 +213,12 @@ body,td,th {
 		
 		/* Specialized style by table section id 2 */
 		[id^="sec2-tr-"] {
-		  font-style: italic;
 		  text-align: center;
 		}
 
 		/* Specialized style by table section id 2 & row 1*/
 		[id^="sec2-tr-1"] {
+		  font-style: italic;
 		  font-weight: bold;
 		  text-align: center;
 		  background-color: #ebf0fa;
@@ -627,9 +627,9 @@ var MenuBar1 = new Spry.Widget.MenuBar("MenuBar1", {imgRight:"SpryAssets/SpryMen
 		appendRows(	tableBody, 
 					[
 						[`${totalsData['CountyName']} County Cumulative Overview:`],
-						[`Total Positive Cases:  ${totalsData['CumulativeCases']}`],
-						[`Total Tests Completed:  ${totalsData['TotalTested']}`],
-						[`Total Fatalities:  ${totalsData['Deaths']}`],
+						[`Total Positive Cases:  ${(totalsData['CumulativeCases']).toLocaleString("en-US")}`],
+						[`Total Tests Completed:  ${(totalsData['TotalTested']).toLocaleString("en-US")}`],
+						[`Total Fatalities:  ${(totalsData['Deaths']).toLocaleString("en-US")}`],
 						[`Reporting Current As Of:  ${totalsData['ReportDate']}`]
 					], 
 					colspan=4,
