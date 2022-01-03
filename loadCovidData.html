@@ -9,12 +9,45 @@
         table, th, td {
             border: solid 1px #ddd;
             border-collapse: collapse;
-            padding: 2px 3px;
+            padding: 0.5em 2em;
             text-align: center;
+			margin-left: auto;
+  			margin-right: auto;
         }
         th {
             font-weight:bold;
+			background-color: #ebf0fa;
         }
+		
+		/* Specialized style by table section id 2 */
+		[id^="sec2-tr-"] {
+		  font-style: italic;
+		  text-align: center;
+		}
+
+		/* Specialized style by table section id 2 & row 1*/
+		[id^="sec2-tr-1"] {
+		  font-style: italic;
+		  font-weight: bold;
+		  text-align: center;
+		  background-color: #ebf0fa;
+		}
+		
+		/* Specialized style by table section id 3 & row 1*/
+		[id^="sec3-tr-1"] {
+		  font-style: italic;
+		  font-weight: bold;
+		  text-align: center;
+		}		
+		
+		/* Specialized style by table section id 3 & row 2*/
+		[id^="sec3-tr-2"] {
+		  font-style: italic;
+		  font-weight: bold;
+		  text-align: center;
+		  font:10px 'Segoe UI';
+		}			
+	
     </style>
 </head>
 <body>
@@ -39,25 +72,38 @@
 </body>
 
 <script>
-
-	var ilCovidApi = 'https://idph.illinois.gov/DPHPublicInformation/api/COVID/GetCountyHistorical?application=json&countyName=Montgomery';
-
-	var fieldMap = {'ReportDate':'Date', 
-					'CasesChange':'Positives',   
-					'TotalTestedChange':'Tested', 
-					'DeathsChange':'Deaths'}; 
+	
+	// customizable parameters
+	const county = 'Montgomery';
+	const qryDays = 7;
+	
+	// build the API URI
+	const rtnFormat = 'json';
+	const qryParams = `application=${rtnFormat}&countyName=${county}`;
+	const ilCovidUri = 'https://idph.illinois.gov/DPHPublicInformation';
+	const dataResource = 'api/COVID/GetCountyHistorical?';
+	const ilCovidApi = `${ilCovidUri}/${dataResource}${qryParams}`;
+	const srcCopyright = "© 2022 - Illinois Department of Public Health"
+	
+	// build the data source citation info link element
+	const apiDocUrl = document.createElement("a");
+	apiDocUrl.setAttribute("href", `${ilCovidUri}/help`);
+	apiDocUrl.className = "ilCovidApiDoc";
+	
+	// filed mapping for output field headers.  
+	// only keys in the filed map will be kept
+	const fieldMap = {'ReportDate':'Date', 
+					  'CasesChange':'Positives',   
+					  'TotalTestedChange':'Tested', 
+					  'DeathsChange':'Deaths'}; 
 	
 	
-	//'ReportDate	CountyName	CumulativeCases	CasesChange	TotalTested	//TotalTestedChange	Deaths	DeathsChange
+	//Schema doc: https://idph.illinois.gov/DPHPublicInformation/Help/ResourceModel?modelName=COVIDCountyHistorical
 	
-	// function to rename keys/headers
-	function renameKey ( obj, oldKey, newKey ) {
-		obj[newKey] = obj[oldKey];
-		delete obj[oldKey];
-	}
 
 	// function to reduce unwanted key value pairs
 	async function reduceKeys(jsonObj, retainKeys) {
+		console.log(`Dropping all keys except: ${retainKeys}`);
 		const rk = new Set(retainKeys);
 		for (const obj of jsonObj) {
 			for (const prop of Object.keys(obj)) {
@@ -68,39 +114,74 @@
 		}
 		return jsonObj;
 	};
+
+	// function to convert datetime stamps to dates
+	async function formatDateKeys(jsonObj, dateKey) {
+		console.log(`Converting ${dateKey} to dates`);
+		jsonObj.forEach(function (obj) {
+			if (Object.keys(obj).includes(dateKey)) {
+				obj[dateKey] = obj[dateKey].substring(0, 10);
+			}
+		})
+	};
+
+	// function to append rows to the bottom 
+	async function appendRows(tableBody, rows, colspan=1, secId=1) {
+		let rowNub = 1
+		for (const row of rows) {
+			const rowElement = document.createElement("tr");
+			rowElement.setAttribute("id", `sec${secId}-tr-${rowNub}`);
+			let cellNub = 1
+			for (const cellText of row) {
+				const cellElement = document.createElement("td");
+				cellElement.setAttribute("id", `sec${secId}-tr-${rowNub}-td-${cellNub}`);
+				cellElement.textContent = cellText;
+				cellElement.colSpan = colspan;
+				rowElement.appendChild(cellElement);
+				cellNub += 1;
+			}
+			tableBody.appendChild(rowElement);
+			rowNub += 1;
+		}
+
+	};
 	
+	// function to request, transform, and display county level 
+	// covid data in an html table element
 	async function loadIntoTable(url, tableName, recLimit) {
 		const table = document.querySelector(tableName)
 		const tableHead = table.querySelector("thead");
 		const tableBody = table.querySelector("tbody");
+		
 		const response = await fetch(url);
 		const rtnData = await response.json();
-		console.log('API request complete')
-		const data = (rtnData.values).slice((-1 *recLimit),);
-		tblData = await reduceKeys(data, Object.keys(fieldMap));
+		console.log('API request complete');
 		
+		// reformat the table report dates
+		formatDateKeys(rtnData.values, 'ReportDate');
+		
+		// capture a snapshot of the most recent record for totals
+		const totalsData = JSON.parse(
+								JSON.stringify(
+									rtnData.values.slice(-1,)
+								)
+							)['0'];
+
+		// capture the most recent n records and reduce 
+		// the keys to match the fieldmap keys
+		const tblData = await reduceKeys(
+								(rtnData.values).slice((-1 *recLimit),),
+								Object.keys(fieldMap));
+		
+		// clear the table		
 		console.log('Clearing the table')
-		// clear the table
 		tableHead.innerHtml = "<tr></tr>";
 		tableBody.innerHtml = "";		
 		
 		console.log('processing data for output table')
-		var headers = [];
-		var rows = [];
-		
-		// convert datetime to dates
-		async function formatDateKeys(jsonObj, dateKey) {
-			jsonObj.forEach(function (obj) {
-				if (Object.keys(obj).includes(dateKey)) {
-					obj[dateKey] = obj[dateKey].substring(0, 10);
-				}
-			return jsonObj
-			})
-		};
-		
-		// format the dates
-		formatDateKeys(tblData, 'ReportDate');
-
+		const headers = [];
+		const rows = [];
+				
 		// collect header and rows and arrays	
 		await tblData.forEach(function (obj) {
 			// create a unique list/array of headers
@@ -118,36 +199,61 @@
 			rows.push(Object.values(obj));				
 		});
 		
+		// populate the table headers
 		console.log('Populating table headers')		
-		// populate the headers
 		for (const headerText of headers) {
 			const headerElement = document.createElement("th");
 			headerElement.textContent = headerText;
 			tableHead.querySelector("tr").appendChild(headerElement);
 		}
-		console.log('Populating table rows')	
-		// populate the rows
-		for (const row of rows) {
-			const rowElement = document.createElement("tr");
-			
-			for (const cellText of row) {
-				const cellElement = document.createElement("td");
-				
-				cellElement.textContent = cellText;
-				rowElement.appendChild(cellElement);
-			}
-			tableBody.appendChild(rowElement);
-		}
+		console.log('Populating table rows')
+		
+		// populate the table rows
+		appendRows(tableBody, rows, colspan=1, secId=1)
+
+		// append totals and current as of date stamp
+		appendRows(	tableBody, 
+					[
+						[`${totalsData['CountyName']} County Cumulative Overview:`],
+						[`Total Positive Cases:  ${totalsData['CumulativeCases']}`],
+						[`Total Tests Completed:  ${totalsData['TotalTested']}`],
+						[`Total Fatalities:  ${totalsData['Deaths']}`],
+						[`Reporting Current As Of:  ${totalsData['ReportDate']}`]
+					], 
+					colspan=4,
+					secId=2 
+					);		
+					
+		// append data source citation info
+		appendRows(	tableBody, 
+					[[''],['']], 
+					colspan=4,
+					secId=3 
+					);		
+		
+		// set the link and text for the source href URL cell
+		const dataSrcHref = apiDocUrl.cloneNode(true);
+		const apiDocUrlText = document.createTextNode('Data Source: Illinois DPH Web API');
+		dataSrcHref.appendChild(apiDocUrlText);
+		const dataSrcCellElement = document.getElementById('sec3-tr-1-td-1');
+		dataSrcCellElement.appendChild(dataSrcHref);
+
+		// set the link and text for the href URL cell
+		const srcCpyrightHref = apiDocUrl.cloneNode(true);
+		const srcCpyrightText = document.createTextNode(srcCopyright);
+		srcCpyrightHref.appendChild(srcCpyrightText);
+		const cpyrightCellElement = document.getElementById('sec3-tr-2-td-1');
+		cpyrightCellElement.appendChild(srcCpyrightHref);		
 			
 		console.log('Table complete')	
 	}	
-		// credits: DCode https://www.youtube.com/watch?v=qBg8IB3u28s
+		// generating table demo: DCode https://www.youtube.com/watch?v=qBg8IB3u28s
 		
 
 	// On page load, collect daily COVID data and build data table
 	if( document.readyState !== 'loading' ) {
 		console.log('Page ready,collecting data from: ' + ilCovidApi );
-		loadIntoTable(ilCovidApi, "table", 7);
+		loadIntoTable(ilCovidApi, "table", qryDays);
 	} else {
 		document.addEventListener('DOMContentLoaded', function () {
 			console.log('Waiting on page to load, then collecting data from: ' + ilCovidApi);
