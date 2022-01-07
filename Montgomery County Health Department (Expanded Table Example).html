@@ -515,7 +515,7 @@
 				<h2 id='covidMeticsSecTitle' class="Bold "><em>Official COVID-19 (Coronavirus) Metrics for Montgomery County, IL</em></h2>
 				<details open>
 					<summary><p class='covidMeticsSecTitle'>Updated Testing and Case Data Overview</p></summary>
-						<p width="450" border="3">
+						<p border="3">
 							<!-- blank table to hold covid stats  --> 		
 							<table id='covidStatsTable' >
 								<thead id='thead' ><tr></tr></thead>
@@ -651,13 +651,14 @@
 	moreCoCovidDataUrl.className = "tableUrlClass"; 
 
 	// set the link and text for the more metrics href URL cell
-	const moreCoMetricsText = document.createTextNode(`* Click here for more ${county} COVID-19 Risk Metrics *`);
+	const moreCoMetricsText = document.createTextNode(`Click here for ${county} COVID-19 Risk Metrics`);
 	moreCoCovidDataUrl.appendChild(moreCoMetricsText);
 
 	// set the link and text for the data source href URL cell
 	const dataSrcHref = apiDocUrl.cloneNode(true);
 	const apiDocUrlText = document.createTextNode('Data Source: Illinois DPH Web API');
 	dataSrcHref.appendChild(apiDocUrlText);
+		
 		
 	// field mapping for output field headers.  
 	// only keys in the filed map will be kept
@@ -767,7 +768,7 @@
 		appendRows(tableBody, rows, colspan = 1, tblName = tableName, secId = 1);
 		// append totals and current as of date stamp
 		appendRows(tableBody, [
-			[`${totalsData['CountyName']} County Cumulative Overview:`],
+			[`${totalsData['CountyName']} County, IL Cumulative Overview:`],
 			[`Total Positive Cases:  ${(totalsData['CumulativeCases']).toLocaleString("en-US")}`],
 			[`Total Tests Completed:  ${(totalsData['TotalTested']).toLocaleString("en-US")}`],
 			[`Total Fatalities:  ${(totalsData['Deaths']).toLocaleString("en-US")}`],
@@ -880,7 +881,7 @@
 	} else {
 		document.addEventListener('DOMContentLoaded', function() {
 			console.log('Waiting on page to load, then collecting data from: ' + ilCovidHistApi);
-			loadHistCovidIntoTable(ilCovidHistApi, "covidStatsTable", 7);
+			loadHistCovidIntoTable(ilCovidHistApi, "covidStatsTable", qryDays);
 			loadHAgeDemIntoTable(ilCovidAgeDemApi, 'covidAgeDemTable');
 		});
 	};
